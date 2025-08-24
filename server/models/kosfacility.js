@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      // Pivot table menghubungkan Kos dan Facility
+      KosFacility.belongsTo(models.Kos, { foreignKey: 'kosId' });
+      KosFacility.belongsTo(models.Facility, { foreignKey: 'facilityId' });
+
     }
   }
   KosFacility.init({

@@ -11,6 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      // Fasilitas bisa ada di banyak kos
+      Facility.belongsToMany(models.Kos, {
+        through: models.KosFacility,
+        foreignKey: 'facilityId',
+        otherKey: 'kosId'
+      });
     }
   }
   Facility.init({

@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // Satu user (owner) bisa punya banyak kos
+      User.hasMany(models.Kos, { foreignKey: 'ownerId' });
     }
   }
   User.init({

@@ -1,4 +1,4 @@
-const { Kos } = require("../models");
+const { Kos, User, Facility } = require("../models");
 
 class KosController {
     static async createKos(req, res) {
@@ -12,7 +12,19 @@ class KosController {
 
     static async getAllKos(req, res) {
         try {
-            const kos = await Kos.findAll();
+            const kos = await Kos.findAll({
+                include: [
+                    {
+                        model: User,
+                        attributes: ['name', 'email'], // hanya field yang ingin ditampilkan
+                    },
+                    {
+                        model: Facility,
+                        attributes: ['name'],          // tampilkan nama fasilitas
+                        through: { attributes: [] },   // sembunyikan kolom KosFacilities
+                    },
+                ],
+            });
             res.json(kos);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -55,6 +67,30 @@ class KosController {
             res.status(500).json({ error: err.message });
         }
     }
+
+    static async addFacilitiesToKos(req, res) {
+        try {
+            const { kosId } = req.params;
+            const { facilityIds } = req.body; // array id fasilitas yang mau ditambahkan
+
+            const kos = await Kos.findByPk(kosId);
+            if (!kos) return res.status(404).json({ error: "Kos not found" });
+
+            // Sequelize magic method untuk many-to-many
+            await kos.addFacilities(facilityIds);
+
+            const updatedKos = await Kos.findByPk(kosId, {
+                include: [
+                    { model: Facility, attributes: ['name'], through: { attributes: [] } }
+                ]
+            });
+
+            res.json(updatedKos);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
 };
 
 module.exports = KosController;

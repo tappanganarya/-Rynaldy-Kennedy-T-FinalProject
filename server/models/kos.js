@@ -11,6 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      // Kos dimiliki oleh satu user
+      Kos.belongsTo(models.User, { foreignKey: 'ownerId' });
+
+      // Kos memiliki banyak fasilitas melalui pivot table
+      Kos.belongsToMany(models.Facility, {
+        through: models.KosFacility,
+        foreignKey: 'kosId',
+        otherKey: 'facilityId'
+      });
     }
   }
   Kos.init({
