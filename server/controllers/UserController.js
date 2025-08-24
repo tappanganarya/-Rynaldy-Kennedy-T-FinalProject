@@ -1,10 +1,19 @@
 const { User } = require("../models");
+const { encryptPwd, decryptPwd } = require("../helpers/brcrypt");
+const { tokenGenerator } = require("../helpers/jwt");
 
 class UserController {
 
     static async createUser(req, res) {
         try {
-            const user = await User.create(req.body);
+            const { name, email, password, role } = req.body;
+            const encrypted = encryptPwd(password)
+            const user = await User.create({
+                name,
+                email,
+                password: encrypted,
+                role,
+            });
             res.json(user);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -57,6 +66,40 @@ class UserController {
             res.status(500).json({ error: err.message });
         }
     }
+
+    // POST /api/login
+    static async login(req, res) {
+        try {
+            const { email, password } = req.body;
+            let userFound = await User.findOne({
+                where: { email },
+            });
+
+            if (!userFound) {
+                return res.status(404).json({ message: "Email Not Found" });
+            }
+
+            if (!decryptPwd(password, userFound.password)) {
+                return res.status(400).json({ message: "Invalid Password" });
+            }
+
+            const access_token = tokenGenerator(userFound);
+
+            res.status(200).json({
+                id: userFound.id,
+                name: userFound.name,
+                email: userFound.email,
+                role: userFound.role,   // ini penting untuk cek di frontend
+                access_token
+            });
+
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    }
+
+
+
 };
 
 module.exports = UserController;

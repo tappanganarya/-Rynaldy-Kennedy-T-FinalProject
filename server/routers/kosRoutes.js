@@ -19,4 +19,7 @@ router.delete("/delete/:id", KosController.deleteKos);
 // Add Fasilities kos
 router.post("/:kosId/facilities", KosController.addFacilitiesToKos);
 
+// detail kos
+router.get("/:id", KosController.detailKost)
+
 module.exports = router;

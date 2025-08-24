@@ -91,6 +91,25 @@ class KosController {
         }
     }
 
+    // Ambil detail kos berdasarkan id
+    static async detailKost(req, res) {
+        try {
+            const { id } = req.params;
+            const kos = await Kos.findByPk(id, {
+                include: [
+                    { model: User, attributes: ["id", "name", "email"] },
+                    { model: Facility, attributes: ["id", "name"] }
+                ]
+            }); // ambil berdasarkan primary key
+            if (!kos) {
+                return res.status(404).json({ message: "Kos tidak ditemukan" });
+            }
+            res.status(200).json(kos);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    }
+
 };
 
 module.exports = KosController;
