@@ -12,7 +12,7 @@ export default function Home() {
 
     const fetchKos = async () => {
         try {
-            const res = await axios.get("http://localhost:3000/api/kos");
+            const res = await axios.get("http://localhost:3000/api/kos/public");
             setKosList(res.data);
         } catch (err) {
             console.error(err);
@@ -34,7 +34,7 @@ export default function Home() {
             <div className="mb-4">
                 <input
                     type="text"
-                    placeholder="Cari nama lokasi/area/alamat"
+                    placeholder="Cari nama kos/lokasi/area/alamat"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="border p-2 rounded w-full"

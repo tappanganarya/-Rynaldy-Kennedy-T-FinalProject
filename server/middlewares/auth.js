@@ -4,16 +4,21 @@ const { tokenVerifier } = require("../helpers/jwt");
 const authentication = (req, res, next) => {
     console.log("Authentication");
     const { access_token } = req.headers;
-    if (access_token) {
+
+    if (!access_token) {
+        return res.status(401).json({ message: "Token not found" });
+    }
+
+    try {
         const decoded = tokenVerifier(access_token);
         req.userData = decoded;
         next();
-    } else {
-        res.send({
-            message: "Token not found",
-        });
+    } catch (err) {
+        console.error("JWT error:", err);
+        return res.status(401).json({ message: "Invalid token" });
     }
 };
+
 
 const authorization = async (req, res, next) => {
     console.log("Authorization");

@@ -29,9 +29,11 @@ module.exports = (sequelize, DataTypes) => {
     price: DataTypes.INTEGER,
     type: DataTypes.STRING,
     ownerId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Kos',
-  });
+  },
+
+    {
+      sequelize,
+      modelName: 'Kos',
+    });
   return Kos;
 };

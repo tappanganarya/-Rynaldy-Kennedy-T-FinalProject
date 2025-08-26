@@ -1,4 +1,3 @@
-// Home.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -8,11 +7,10 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // panggil backend di localhost:3000
         axios
-            .get("http://localhost:3000/api/kos") // ganti endpoint sesuai backendmu
+            .get("http://localhost:3000/api/kos/public")
             .then((res) => {
-                setKosts(res.data); // asumsi data array
+                setKosts(res.data);
                 setLoading(false);
             })
             .catch((err) => {
@@ -20,6 +18,7 @@ export default function Home() {
                 setLoading(false);
             });
     }, []);
+
 
     if (loading) {
         return <p className="text-center mt-10">Loading...</p>;
@@ -40,13 +39,6 @@ export default function Home() {
                         <p className="mb-1">Harga: Rp {kost.price}</p>
                         <p className="mb-1">Tipe: {kost.type}</p>
                         {/* <p className="mb-1">Owner: {kost.User?.name}</p> */}
-
-                        {kost.Facilities && kost.Facilities.length > 0 && (
-                            <div className="mt-2">
-                                <span className="font-medium">Fasilitas: </span>
-                                {kost.Facilities.map((f) => f.name).join(", ")}
-                            </div>
-                        )}
 
                         <Link
                             to={`/kos/${kost.id}`}

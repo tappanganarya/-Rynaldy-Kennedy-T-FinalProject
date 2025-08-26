@@ -3,25 +3,41 @@ const { Kos, User, Facility } = require("../models");
 class KosController {
     static async createKos(req, res) {
         try {
-            const kos = await Kos.create(req.body);
-            res.json(kos);
+            const { name, address, price, type, facilityIds } = req.body;
+            const ownerId = req.userData.id; // ✅ dari token, bukan dari body
+
+            const kos = await Kos.create({ name, address, price, type, ownerId });
+
+            if (facilityIds && facilityIds.length > 0) {
+                await kos.setFacilities(facilityIds);
+            }
+
+            const kosWithFacilities = await Kos.findByPk(kos.id, {
+                include: [
+                    { model: User, attributes: ["name", "email"] },
+                    { model: Facility, attributes: ["id", "name"], through: { attributes: [] } },
+                ],
+            });
+
+            res.status(201).json(kosWithFacilities);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     }
 
-    static async getAllKos(req, res) {
+
+    static async getAllKosPublic(req, res) {
         try {
             const kos = await Kos.findAll({
                 include: [
                     {
                         model: User,
-                        attributes: ['name', 'email'], // hanya field yang ingin ditampilkan
+                        attributes: ['name', 'email'],
                     },
                     {
                         model: Facility,
-                        attributes: ['name'],          // tampilkan nama fasilitas
-                        through: { attributes: [] },   // sembunyikan kolom KosFacilities
+                        attributes: ['name'],
+                        through: { attributes: [] },
                     },
                 ],
             });
@@ -30,6 +46,27 @@ class KosController {
             res.status(500).json({ error: err.message });
         }
     }
+
+    static async getAllKos(req, res) {
+        try {
+            const userId = req.userData.id;
+
+            const kosList = await Kos.findAll({
+                where: { ownerId: userId }, // ✅ filter per user
+                include: [
+                    { model: User, attributes: ["name", "email"] },
+                    { model: Facility, attributes: ["name"], through: { attributes: [] } },
+                ],
+                order: [["id", "ASC"]],
+            });
+
+            return res.status(200).json(kosList);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+
 
     static async getKosById(req, res) {
         try {
@@ -43,30 +80,49 @@ class KosController {
 
     static async updateKos(req, res) {
         try {
-            const { name, address, price, type } = req.body; // ambil dari body
-            const { id } = req.params; // ambil dari params
+            const { name, address, price, type, facilityIds } = req.body;
+            const { id } = req.params;
+            const userId = req.userData.id;
 
-            const kos = await Kos.findByPk(id);
-            if (!kos) return res.status(404).json({ error: "kos not found" });
+            const kos = await Kos.findOne({ where: { id, ownerId: userId } }); // ✅ cek kepemilikan
+            if (!kos) return res.status(403).json({ error: "Forbidden: not your kos" });
 
-            await kos.update({ name, address, price, type }); // langsung update kos yg sudah ditemukan
+            await kos.update({ name, address, price, type });
 
-            res.json(kos);
+            if (facilityIds && Array.isArray(facilityIds)) {
+                await kos.setFacilities(facilityIds);
+            }
+
+            const updatedKos = await Kos.findByPk(id, {
+                include: [
+                    { model: User, attributes: ["name", "email"] },
+                    { model: Facility, attributes: ["id", "name"], through: { attributes: [] } }
+                ]
+            });
+
+            res.json(updatedKos);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     }
 
+
+
     static async deleteKos(req, res) {
         try {
-            const kos = await Kos.findByPk(req.params.id);
-            if (!kos) return res.status(404).json({ error: "Kos not found" });
+            const { id } = req.params;
+            const userId = req.userData.id;
+
+            const kos = await Kos.findOne({ where: { id, ownerId: userId } }); // ✅ cek kepemilikan
+            if (!kos) return res.status(403).json({ error: "Forbidden: not your kos" });
+
             await kos.destroy();
             res.json({ message: "Kos deleted" });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     }
+
 
     static async addFacilitiesToKos(req, res) {
         try {

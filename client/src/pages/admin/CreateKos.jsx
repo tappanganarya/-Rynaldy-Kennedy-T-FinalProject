@@ -11,7 +11,12 @@ export default function CreateKos() {
         ownerId: "", // nanti otomatis isi
     });
 
+    const [facilities, setFacilities] = useState([]); // semua fasilitas dari backend
+    const [selectedFacilities, setSelectedFacilities] = useState([]); // id fasilitas yg dipilih
     const [loading, setLoading] = useState(false);
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+
 
     // ambil data user dari localStorage
     useEffect(() => {
@@ -19,9 +24,22 @@ export default function CreateKos() {
         if (user) {
             setForm((prev) => ({
                 ...prev,
-                ownerId: user.id, // isi otomatis sesuai id user yg login
+                ownerId: user.id,
             }));
         }
+    }, []);
+
+    // fetch semua fasilitas dari backend
+    useEffect(() => {
+        fetch("http://localhost:3000/api/facilities", {
+            headers: {
+                "Content-Type": "application/json",
+                access_token: token
+            }
+        })
+            .then((res) => res.json())
+            .then((data) => setFacilities(data))
+            .catch((err) => console.error(err));
     }, []);
 
     const handleChange = (e) => {
@@ -29,6 +47,15 @@ export default function CreateKos() {
             ...form,
             [e.target.name]: e.target.value,
         });
+    };
+
+    // handle pilih fasilitas
+    const handleFacilityChange = (id) => {
+        setSelectedFacilities((prev) =>
+            prev.includes(id)
+                ? prev.filter((fid) => fid !== id)
+                : [...prev, id]
+        );
     };
 
     const handleSubmit = async (e) => {
@@ -40,8 +67,12 @@ export default function CreateKos() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    access_token: token
                 },
-                body: JSON.stringify(form),
+                body: JSON.stringify({
+                    ...form,
+                    facilityIds: selectedFacilities, // kirim id fasilitas ke backend
+                }),
             });
 
             if (!res.ok) throw new Error("Gagal menambahkan kos");
@@ -100,6 +131,24 @@ export default function CreateKos() {
                     <option value="Wanita">Wanita</option>
                     <option value="Campur">Campur</option>
                 </select>
+
+                {/* Checkbox fasilitas */}
+                <div>
+                    <h2 className="font-semibold">Fasilitas</h2>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                        {facilities.map((f) => (
+                            <label key={f.id} className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedFacilities.includes(f.id)}
+                                    onChange={() => handleFacilityChange(f.id)}
+                                />
+                                {f.name}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
 
                 {/* OwnerId jadi hidden input */}
                 <input type="hidden" name="ownerId" value={form.ownerId} />

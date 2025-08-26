@@ -36,6 +36,7 @@ function KosDetail() {
             <p><strong>Harga:</strong> Rp {kos.price}</p>
             <p><strong>Type:</strong> {kos.type}</p>
 
+
             <p><strong>Owner:</strong> {kos.User?.name || "Tidak diketahui"}</p>
 
 

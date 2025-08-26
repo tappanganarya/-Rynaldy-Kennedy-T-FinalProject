@@ -5,20 +5,24 @@ export default function KosList() {
     const [kosts, setKosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
 
     useEffect(() => {
         fetch("http://localhost:3000/api/kos", {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
+                "Content-Type": "application/json",
+                access_token: token
+            }
         })
-            .then((res) => res.json())
-            .then((data) => {
+            .then(res => res.json())
+            .then(data => {
+                console.log("DATA DARI BACKEND:", data);
                 setKosts(data);
                 setLoading(false);
             })
-            .catch((err) => {
-                console.error(err);
+            .catch(err => {
+                console.error("ERROR FETCH:", err);
                 setLoading(false);
             });
     }, []);
@@ -29,8 +33,9 @@ export default function KosList() {
             const res = await fetch(`http://localhost:3000/api/kos/delete/${id}`, {
                 method: "DELETE",
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-                },
+                    "Content-Type": "application/json",
+                    access_token: token
+                }
             });
             if (res.ok) {
                 setKosts(kosts.filter((k) => k.id !== id));
