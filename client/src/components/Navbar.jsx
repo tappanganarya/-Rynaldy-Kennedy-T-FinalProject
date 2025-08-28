@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
     Disclosure,
-    DisclosureButton,
-    DisclosurePanel,
     Menu,
     MenuButton,
     MenuItem,
@@ -19,6 +17,7 @@ export default function Navbar() {
     const [user, setUser] = useState(null);
     const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -41,13 +40,13 @@ export default function Navbar() {
     };
 
     const navigation = [
-        { name: "Home", to: "/", current: true },
-        { name: "Search", to: "/kos/search/:id", current: false },
+        { name: "Home", to: "/" },
+        { name: "Search", to: "/kos/search/:id" },
         ...(user?.role === "admin"
-            ? [{ name: "Home Admin", to: "/admin", current: false }]
+            ? [{ name: "Home Admin", to: "/admin" }]
             : []),
-        ...(user?.role === "user"
-            ? [{ name: "User", to: "/", current: false }]
+        ...(user?.role === "superadmin"
+            ? [{ name: "Super Admin", to: "/superAdmin" }]
             : []),
     ];
 
@@ -61,7 +60,7 @@ export default function Navbar() {
                 "fixed w-full top-0 z-50 transition-all duration-300"
             )}
         >
-            {({ open }) => (
+            {() => (
                 <>
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 justify-between items-center">
@@ -80,24 +79,27 @@ export default function Navbar() {
 
                             {/* Desktop Menu */}
                             <div className="hidden sm:flex sm:items-center sm:space-x-4">
-                                {navigation.map((item) => (
-                                    <Link
-                                        key={item.name}
-                                        to={item.to}
-                                        className={classNames(
-                                            item.current
-                                                ? scrolled
-                                                    ? "bg-blue-800 text-white"
-                                                    : "bg-gray-200 text-black"
-                                                : scrolled
-                                                    ? "text-white hover:bg-blue-500 hover:text-white"
-                                                    : "text-black hover:bg-gray-100 hover:text-black",
-                                            "px-3 py-2 rounded-md text-sm font-medium"
-                                        )}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                ))}
+                                {navigation.map((item) => {
+                                    const isActive = location.pathname === item.to;
+                                    return (
+                                        <Link
+                                            key={item.name}
+                                            to={item.to}
+                                            className={classNames(
+                                                isActive
+                                                    ? scrolled
+                                                        ? "bg-blue-800 text-white"
+                                                        : "bg-gray-200 text-black"
+                                                    : scrolled
+                                                        ? "text-white hover:bg-blue-500 hover:text-white"
+                                                        : "text-black hover:bg-gray-100 hover:text-black",
+                                                "px-3 py-2 rounded-md text-sm font-medium"
+                                            )}
+                                        >
+                                            {item.name}
+                                        </Link>
+                                    );
+                                })}
                             </div>
 
                             {/* Right: User / Login */}
@@ -129,17 +131,30 @@ export default function Navbar() {
                                         </MenuItems>
                                     </Menu>
                                 ) : (
-                                    <Link
-                                        to="/login"
-                                        className={classNames(
-                                            scrolled
-                                                ? "bg-white text-blue-600"
-                                                : "bg-blue-600 text-white",
-                                            "px-4 py-2 rounded-lg font-semibold hover:bg-gray-100"
-                                        )}
-                                    >
-                                        Login
-                                    </Link>
+                                    <div className="flex items-center space-x-2">
+                                        <Link
+                                            to="/login"
+                                            className={classNames(
+                                                scrolled
+                                                    ? "bg-white text-blue-600"
+                                                    : "bg-blue-600 text-white",
+                                                "px-4 py-2 rounded-lg font-semibold hover:bg-gray-100"
+                                            )}
+                                        >
+                                            Login
+                                        </Link>
+                                        <Link
+                                            to="/register"
+                                            className={classNames(
+                                                scrolled
+                                                    ? "bg-blue-600 text-white"
+                                                    : "bg-white text-blue-600",
+                                                "px-4 py-2 rounded-lg font-semibold hover:bg-gray-100"
+                                            )}
+                                        >
+                                            Register
+                                        </Link>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -147,6 +162,5 @@ export default function Navbar() {
                 </>
             )}
         </Disclosure>
-
     );
 }

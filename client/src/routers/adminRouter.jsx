@@ -1,7 +1,6 @@
 import KosList from "../pages/admin/KosList";
 import UpdateKost from "../pages/admin/UpdateKos";
 import CreateKost from "../pages/admin/CreateKos";
-import UserList from "../pages/admin/UserList";
 
 
 const adminRouter = [
@@ -17,10 +16,6 @@ const adminRouter = [
         path: "create",
         element: <CreateKost />,
     },
-    {
-        path: "users",
-        element: <UserList />,
-    }
 ];
 
 

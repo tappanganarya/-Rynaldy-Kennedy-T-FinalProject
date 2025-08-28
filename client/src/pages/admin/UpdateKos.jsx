@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function UpdateKost() {
     const { id } = useParams();
@@ -14,10 +15,9 @@ export default function UpdateKost() {
         type: "",
     });
 
-    const [facilities, setFacilities] = useState([]); // semua fasilitas
-    const [selectedFacilities, setSelectedFacilities] = useState([]); // fasilitas yang dipilih
+    const [facilities, setFacilities] = useState([]);
+    const [selectedFacilities, setSelectedFacilities] = useState([]);
 
-    // Ambil data kost berdasarkan ID
     useEffect(() => {
         fetch(`http://localhost:3000/api/kos/${id}`, {
             headers: {
@@ -34,14 +34,12 @@ export default function UpdateKost() {
                     type: data.type || "",
                 });
 
-                // set fasilitas yang sudah ada
                 if (data.Facilities) {
                     setSelectedFacilities(data.Facilities.map((f) => f.id));
                 }
             })
             .catch((err) => console.error("Gagal fetch detail kos:", err));
 
-        // fetch semua fasilitas
         fetch("http://localhost:3000/api/facilities", {
             headers: {
                 "Content-Type": "application/json",
@@ -53,12 +51,10 @@ export default function UpdateKost() {
             .catch((err) => console.error("Gagal fetch fasilitas:", err));
     }, [id]);
 
-    // Handle input form
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    // Handle checkbox fasilitas
     const handleFacilityChange = (facilityId) => {
         setSelectedFacilities((prev) =>
             prev.includes(facilityId)
@@ -67,12 +63,10 @@ export default function UpdateKost() {
         );
     };
 
-    // Submit update
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            // Update kos dulu
             const resKos = await fetch(`http://localhost:3000/api/kos/update/${id}`, {
                 method: "PUT",
                 headers: {
@@ -86,13 +80,12 @@ export default function UpdateKost() {
                 throw new Error("Gagal update data kos");
             }
 
-            // Update fasilitas (opsional kalau ada fasilitas dipilih)
             if (selectedFacilities.length > 0) {
                 const resFacilities = await fetch(`http://localhost:3000/api/kos/${id}/facilities`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                        access_token: token,
                     },
                     body: JSON.stringify({ facilityIds: selectedFacilities }),
                 });
@@ -102,77 +95,97 @@ export default function UpdateKost() {
                 }
             }
 
-            alert("Berhasil update kos!");
+            Swal.fire({
+                title: "Berhasil!",
+                text: "Data kos berhasil diupdate.",
+                icon: "success",
+                confirmButtonColor: "#2563eb"
+            });
             navigate("/admin/kos");
         } catch (err) {
             console.error(err);
-            alert("Gagal update kos!");
+            Swal.fire("Gagal!", "Terjadi error saat update kos.", "error");
         }
     };
 
-
     return (
-        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-4">Update Kost</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Nama Kost"
-                    className="w-full border rounded px-3 py-2"
-                />
-                <input
-                    type="text"
-                    name="address"
-                    value={form.address}
-                    onChange={handleChange}
-                    placeholder="Alamat"
-                    className="w-full border rounded px-3 py-2"
-                />
-                <input
-                    type="number"
-                    name="price"
-                    value={form.price}
-                    onChange={handleChange}
-                    placeholder="Harga"
-                    className="w-full border rounded px-3 py-2"
-                />
-                <select
-                    name="type"
-                    value={form.type}
-                    onChange={handleChange}
-                    className="w-full border rounded px-3 py-2"
-                >
-                    <option value="">-- Pilih Tipe --</option>
-                    <option value="Pria">Pria</option>
-                    <option value="Wanita">Wanita</option>
-                    <option value="Campur">Campur</option>
-                </select>
+        <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+                <h1 className="text-3xl font-bold text-blue-600 text-center mb-6">✏️ Edit Kost</h1>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                        <label className="block font-medium mb-1">Nama Kost</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            placeholder="Masukkan nama kost"
+                            className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium mb-1">Alamat</label>
+                        <input
+                            type="text"
+                            name="address"
+                            value={form.address}
+                            onChange={handleChange}
+                            placeholder="Masukkan alamat"
+                            className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium mb-1">Harga</label>
+                        <input
+                            type="number"
+                            name="price"
+                            value={form.price}
+                            onChange={handleChange}
+                            placeholder="Masukkan harga"
+                            className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium mb-1">Tipe</label>
+                        <select
+                            name="type"
+                            value={form.type}
+                            onChange={handleChange}
+                            className="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="">-- Pilih Tipe --</option>
+                            <option value="Pria">Pria</option>
+                            <option value="Wanita">Wanita</option>
+                            <option value="Campur">Campur</option>
+                        </select>
+                    </div>
 
-                {/* Fasilitas */}
-                <div>
-                    <h2 className="font-semibold mb-2">Fasilitas</h2>
-                    {facilities.map((f) => (
-                        <label key={f.id} className="flex items-center space-x-2 mb-1">
-                            <input
-                                type="checkbox"
-                                checked={selectedFacilities.includes(f.id)}
-                                onChange={() => handleFacilityChange(f.id)}
-                            />
-                            <span>{f.name}</span>
-                        </label>
-                    ))}
-                </div>
+                    {/* Fasilitas */}
+                    <div>
+                        <h2 className="font-semibold mb-2">Fasilitas</h2>
+                        <div className="grid grid-cols-2 gap-2">
+                            {facilities.map((f) => (
+                                <label key={f.id} className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg shadow-sm cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedFacilities.includes(f.id)}
+                                        onChange={() => handleFacilityChange(f.id)}
+                                    />
+                                    <span>{f.name}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
 
-                <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700"
-                >
-                    Update
-                </button>
-            </form>
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-lg hover:bg-blue-700 transition shadow-md"
+                    >
+                        Simpan Perubahan
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

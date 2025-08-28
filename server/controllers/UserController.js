@@ -12,7 +12,7 @@ class UserController {
                 name,
                 email,
                 password: encrypted,
-                role,
+                role: "admin",
             });
             res.json(user);
         } catch (err) {

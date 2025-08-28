@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function KosList() {
     const [kosts, setKosts] = useState([]);
@@ -28,25 +29,40 @@ export default function KosList() {
     }, []);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Yakin hapus kos ini?")) return;
+        const result = await Swal.fire({
+            title: "Yakin mau hapus kos ini?",
+            text: "Data yang dihapus tidak bisa dikembalikan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Ya, Hapus!",
+            cancelButtonText: "Batal",
+        });
+
+        if (!result.isConfirmed) return;
+
         try {
             const res = await fetch(`http://localhost:3000/api/kos/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
-                    access_token: token
-                }
+                    access_token: token,
+                },
             });
+
             if (res.ok) {
                 setKosts(kosts.filter((k) => k.id !== id));
+                Swal.fire("Terhapus!", "Kos berhasil dihapus.", "success");
             } else {
-                alert("Gagal hapus kos!");
+                Swal.fire("Gagal!", "Kos gagal dihapus.", "error");
             }
         } catch (err) {
             console.error(err);
-            alert("Terjadi error!");
+            Swal.fire("Error!", "Terjadi kesalahan pada server.", "error");
         }
     };
+
 
     if (loading) return <p className="text-gray-600">Loading daftar kos...</p>;
 
@@ -65,7 +81,7 @@ export default function KosList() {
             <div className="overflow-x-auto rounded-lg shadow">
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead>
-                        <tr className="bg-blue-600 text-white text-left">
+                        <tr className="bg-gray-300 text-black text-left">
                             <th className="py-3 px-4">#</th>
                             <th className="py-3 px-4">Nama Kost</th>
                             <th className="py-3 px-4">Owner</th>
@@ -73,40 +89,38 @@ export default function KosList() {
                         </tr>
                     </thead>
                     <tbody>
-                        {kosts.map((kost, index) => (
-                            <tr
-                                key={kost.id}
-                                className="border-b hover:bg-gray-50 transition"
-                            >
-                                <td className="py-3 px-4">{index + 1}</td>
-                                <td className="py-3 px-4 font-medium text-gray-700">
-                                    {kost.name}
-                                </td>
-                                <td className="py-3 px-4 text-gray-600">
-                                    {kost.User?.name || kost.user?.name || "Tidak ada owner"}
-                                </td>
-                                <td className="py-3 px-4 flex justify-center gap-2">
-                                    <Link
-                                        to={`/kos/${kost.id}`}
-                                        className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-blue-600"
-                                    >
-                                        View
-                                    </Link>
-                                    <Link
-                                        to={`/admin/update/${kost.id}`}
-                                        className="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-yellow-600"
-                                    >
-                                        Edit
-                                    </Link>
-                                    <button
-                                        onClick={() => handleDelete(kost.id)}
-                                        className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-red-600"
-                                    >
-                                        Delete
-                                    </button>
+                        {Array.isArray(kosts) && kosts.length > 0 ? (
+                            kosts.map((kost, index) => (
+                                <tr key={kost.id} className="border-b hover:bg-gray-50 transition">
+                                    <td className="py-3 px-4">{index + 1}</td>
+                                    <td className="py-3 px-4 font-medium text-gray-700">{kost.name}</td>
+                                    <td className="py-3 px-4 text-gray-600">
+                                        {kost.User?.name || kost.user?.name || "Tidak ada owner"}
+                                    </td>
+                                    <td className="py-3 px-4 flex justify-center gap-2">
+                                        <Link to={`/kos/${kost.id}`} className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-blue-600">
+                                            View
+                                        </Link>
+                                        <Link to={`/admin/update/${kost.id}`} className="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-yellow-600">
+                                            Edit
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(kost.id)}
+                                            className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm shadow hover:bg-red-600"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4" className="py-3 px-4 text-center text-gray-500">
+                                    Belum ada kos tersedia
                                 </td>
                             </tr>
-                        ))}
+                        )}
+
                     </tbody>
                 </table>
             </div>
