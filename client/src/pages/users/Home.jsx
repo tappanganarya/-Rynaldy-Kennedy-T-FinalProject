@@ -25,54 +25,63 @@ export default function Home() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="bg-gray-50 min-h-screen">
             <Header />
-            <div className="max-w-6xl mx-auto  py-10">
-                <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-                    🏠 Daftar Kost
-                </h1>
+            <div className="mx-auto max-w-7xl px-6 lg:px-8 py-16">
+                <div className="mx-auto max-w-2xl text-center">
+                    <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                        Cari Kost Impianmu
+                    </h2>
+                    <p className="mt-4 text-lg text-gray-600">
+                        Temukan kost nyaman, aman, dan sesuai budget kamu.
+                    </p>
+                </div>
 
                 {kosts.length === 0 ? (
-                    <p className="text-center text-gray-500">Tidak ada kost tersedia.</p>
+                    <p className="text-center text-gray-500 mt-10">
+                        Tidak ada kost tersedia.
+                    </p>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                         {kosts.map((kost) => (
                             <div
                                 key={kost.id}
-                                className="bg-white rounded-2xl shadow hover:shadow-xl transition p-5 flex flex-col"
+                                className="rounded-2xl shadow-lg bg-white hover:shadow-2xl transition duration-300 overflow-hidden flex flex-col"
                             >
-                                {/* Gambar dummy / nanti bisa pakai kost.image */}
-                                <div className="h-40 bg-gray-200 rounded-xl mb-4 flex items-center justify-center text-gray-400">
-                                    <span className="text-sm">No Image</span>
+                                {/* Jika ada image tampilkan, kalau tidak pakai dummy */}
+                                <img
+                                    src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                    alt="Kos"
+                                    className="w-full h-48 object-cover"
+                                />
+
+
+                                <div className="p-6 flex flex-col flex-grow">
+                                    <h3 className="text-xl font-semibold text-gray-900">
+                                        {kost.name}
+                                    </h3>
+                                    <p className="text-sm text-gray-500">{kost.address}</p>
+                                    <p className="mt-2 text-lg font-bold text-indigo-600">
+                                        Rp {kost.price?.toLocaleString()} / bulan
+                                    </p>
+                                    <p className="mt-3 text-sm text-gray-600 line-clamp-3">
+                                        {`Kost ${kost.type}` || "Tidak ada"}
+                                    </p>
+                                    <div className="mt-4 text-sm">
+                                        <p className="font-medium text-gray-800">
+                                            Pemilik: {kost.User?.name || "Tidak diketahui"}
+                                        </p>
+                                        <p className="text-gray-500">
+                                            Telp: {kost.owner_phone || "-"}
+                                        </p>
+                                    </div>
+                                    <Link
+                                        to={`/kos/${kost.id}`}
+                                        className="mt-5 w-full rounded-xl bg-indigo-600 px-4 py-2 text-white font-medium hover:bg-indigo-700 transition text-center"
+                                    >
+                                        Lihat Detail
+                                    </Link>
                                 </div>
-
-                                <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                                    {kost.name}
-                                </h2>
-                                <p className="text-gray-600 text-sm mb-1">
-                                    📍 {kost.address}
-                                </p>
-                                <p className="text-blue-600 font-bold text-lg mb-2">
-                                    Rp {kost.price.toLocaleString()}
-                                </p>
-
-                                <span
-                                    className={`inline-block px-3 py-1 text-xs font-medium rounded-full mb-4 ${kost.type === "Putra"
-                                        ? "bg-blue-100 text-blue-600"
-                                        : kost.type === "Putri"
-                                            ? "bg-pink-100 text-pink-600"
-                                            : "bg-green-100 text-green-600"
-                                        }`}
-                                >
-                                    {kost.type}
-                                </span>
-
-                                <Link
-                                    to={`/kos/${kost.id}`}
-                                    className="mt-auto bg-blue-600 text-white py-2 px-4 rounded-xl text-center hover:bg-blue-700 transition"
-                                >
-                                    Lihat Detail
-                                </Link>
                             </div>
                         ))}
                     </div>

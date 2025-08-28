@@ -1,63 +1,69 @@
 const posts = [
     {
         id: 1,
-        title: 'Boost your conversion rate',
+        title: 'Kelola Kost Lebih Mudah',
         href: '#',
         description:
-            'Illo sint voluptas. Error voluptates culpa eligendi. Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. Sed exercitationem placeat consectetur nulla deserunt vel. Iusto corrupti dicta.',
-        date: 'Mar 16, 2020',
-        datetime: '2020-03-16',
-        category: { title: 'Marketing', href: '#' },
+            'Dengan MyKost Management, pemilik kost bisa mengatur kamar, harga, dan penyewa secara praktis dalam satu platform.',
+        date: 'Agu 28, 2025',
+        datetime: '2025-08-28',
+        category: { title: 'Management', href: '#' },
         author: {
-            name: 'Michael Foster',
-            role: 'Co-Founder / CTO',
+            name: 'Rina Saputra',
+            role: 'Owner Kost Exclusive',
             href: '#',
             imageUrl:
-                'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+                'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-1.2.1&auto=format&fit=facearea&w=256&h=256&q=80',
         },
     },
     {
         id: 2,
-        title: 'How to use search engine optimization to drive sales',
+        title: 'Cari Kost Jadi Lebih Cepat',
         href: '#',
-        description: 'Optio cum necessitatibus dolor voluptatum provident commodi et. Qui aperiam fugiat nemo cumque.',
-        date: 'Mar 10, 2020',
-        datetime: '2020-03-10',
-        category: { title: 'Sales', href: '#' },
+        description:
+            'Pencari kost dapat menemukan kamar sesuai lokasi, harga, dan fasilitas favorit hanya dengan beberapa klik.',
+        date: 'Agu 20, 2025',
+        datetime: '2025-08-20',
+        category: { title: 'Booking', href: '#' },
         author: {
-            name: 'Lindsay Walton',
-            role: 'Front-end Developer',
+            name: 'Andi Wijaya',
+            role: 'Mahasiswa',
             href: '#',
             imageUrl:
-                'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+                'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&auto=format&fit=facearea&w=256&h=256&q=80',
         },
     },
     {
         id: 3,
-        title: 'Improve your customer experience',
+        title: 'Pantau Penyewa dan Pembayaran',
         href: '#',
         description:
-            'Cupiditate maiores ullam eveniet adipisci in doloribus nulla minus. Voluptas iusto libero adipisci rem et corporis. Nostrud sint anim sunt aliqua. Nulla eu labore irure incididunt velit cillum quis magna dolore.',
-        date: 'Feb 12, 2020',
-        datetime: '2020-02-12',
-        category: { title: 'Business', href: '#' },
+            'Sistem otomatis memudahkan pemilik kost memantau penyewa, jatuh tempo pembayaran, hingga laporan bulanan.',
+        date: 'Agu 15, 2025',
+        datetime: '2025-08-15',
+        category: { title: 'Finance', href: '#' },
         author: {
-            name: 'Tom Cook',
-            role: 'Director of Product',
+            name: 'Dewi Lestari',
+            role: 'Manajer Kost',
             href: '#',
             imageUrl:
-                'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+                'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&w=256&h=256&q=80',
         },
     },
 ]
+
 
 export default function Example() {
     return (
         <div className="bg-gray-100 py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl lg:mx-0">
-                    <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">Mau cari kos?</h2>
-                    <p className="mt-2 text-lg/8 text-gray-600">Dapatkan infonya dan langsung sewa di MyKost.</p>
+                    <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                        MyKost Management
+                    </h2>
+                    <p className="mt-3 text-lg text-gray-600">
+                        Mau cari kos? Atur, kelola, dan sewa kost lebih mudah dengan <span className="font-semibold text-indigo-600">MyKost Management</span>.
+                    </p>
                 </div>
                 <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 border-t border-gray-200 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
                     {posts.map((post) => (
@@ -74,17 +80,17 @@ export default function Example() {
                                 </a>
                             </div>
                             <div className="group relative grow">
-                                <h3 className="mt-3 text-lg/6 font-semibold text-gray-900 group-hover:text-gray-600">
+                                <h3 className="mt-3 text-lg font-semibold text-gray-900 group-hover:text-gray-600">
                                     <a href={post.href}>
                                         <span className="absolute inset-0" />
                                         {post.title}
                                     </a>
                                 </h3>
-                                <p className="mt-5 line-clamp-3 text-sm/6 text-gray-600">{post.description}</p>
+                                <p className="mt-5 line-clamp-3 text-sm text-gray-600">{post.description}</p>
                             </div>
                             <div className="relative mt-8 flex items-center gap-x-4 justify-self-end">
                                 <img alt="" src={post.author.imageUrl} className="size-10 rounded-full bg-gray-50" />
-                                <div className="text-sm/6">
+                                <div className="text-sm">
                                     <p className="font-semibold text-gray-900">
                                         <a href={post.author.href}>
                                             <span className="absolute inset-0" />
